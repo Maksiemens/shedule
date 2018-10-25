@@ -2,73 +2,36 @@
 	box-sizing: border-box;
 }
 
-/*Параметры контейнера*/
-.app {
-	width: 800px;
-}
-
-/*Ось координат Х и Y*/
-.y-axis path,
-.x-axis path {
+line {
+	fill: none;
 	stroke:	rgb(211, 211, 211);
-	stroke-width: 2;
 }
 
-/*Цифры на осях Х и Y*/
-.tick text,
-.y-text,
-.x-text {
+path {
+	fill: none;
+}
+
+/*Ð¦Ð¸Ñ„Ñ€Ñ‹ Ð½Ð° Ð¾ÑÑÑ… Ð¥ Ð¸ Y*/
+.tick text {
 	fill: rgb(128, 128, 128);
 	font-family: Arial, sans-serif;
-	font-size: 10px;
+	font-size: 12px;
 }
 
-/*Цифры координат Х и Y*/
-.y-text, .x-text {
+/*Ð¢ÐµÐºÑÑ‚ Ð´Ð»Ñ Ð¾ÑÐµÐ¹ Ð¥ Ð¸ Y*/
+.textX, .textY {
 	fill: rgb(0, 0, 0);
+	font-family: Arial, sans-serif;
+	font-size: 24px;
 }
 
-/*Линии на осях Х и Y*/
-.tick line {
-	fill: none;
-	stroke:	rgba(211, 211, 211, 0.3);
-}
-
-/*Закрашеная область*/
+/*Ð—Ð°ÐºÑ€Ð°ÑˆÐµÐ½Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ*/
 .area {
 	fill: rgba(144, 238, 144, 0.5);
 } 
 
-/* Контур закрашеваемой области (бордер) */
+/* ÐšÐ¾Ð½Ñ‚ÑƒÑ€ Ð·Ð°ÐºÑ€Ð°ÑˆÐµÐ²Ð°ÐµÐ¼Ð¾Ð¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ (Ð±Ð¾Ñ€Ð´ÐµÑ€) */
 .border-line {
-	fill: none;
 	stroke: rgb(0, 128, 0);
 	stroke-width: 2;
-}
-
-/* Вертикальная линия */
-.vertical-line {
-	stroke: rgb(255, 0, 0);
-	stroke-width: 1;
-}
-
-/* Текстбоксы */
-.y-text-box, .x-text-box {
-	fill: rgba(45,145,255, .5);
-}
-
-/* Круг */
-.circle {
-	fill: rgba(144, 238, 144, .5);
-	stroke: rgb(0, 128, 0);
-}
-
-/* Блок линии, круга, текстбокса, текстов с координат */
-.line-wrap {
-	transition: opacity 0.3s;
-	opacity: 0;
-}
-
-.active {
-	opacity: 1;
 }
