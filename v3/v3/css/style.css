@@ -1,0 +1,70 @@
+* {
+	box-sizing: border-box;
+}
+
+/*Сама ось координат Х и Y*/
+.y-axis path, .x-axis path {
+	stroke:	rgb(211, 211, 211);
+	stroke-width: 2;
+}
+
+/*Цифры на осях Х и Y*/
+.tick text, .text {
+	fill: rgb(128, 128, 128);
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+}
+
+/*Линии на осях Х и Y*/
+.tick line {
+	fill: none;
+	stroke:	rgba(211, 211, 211, 0.55);
+}
+
+/*Текст для осей Х и Y*/
+.textX, .textY, .textX-s {
+	fill: rgb(0, 0, 0);
+	font-family: Arial, sans-serif;
+	font-size: 24px;
+	text-anchor: end;
+}
+
+.textX-s {
+	font-size: 20px;
+}
+
+/*Закрашеная область*/
+.area {
+	fill: rgba(144, 238, 144, 0.5);
+} 
+
+/* Контур закрашеваемой области (бордер) */
+.border-line {
+	fill: none;
+	stroke: rgb(0, 128, 0);
+	stroke-width: 2;
+}
+
+
+.vertical-line {
+	stroke: rgb(0, 0, 255);
+	stroke-width: 2;
+}
+
+.text-box {
+	fill: rgb(240,248,255);
+}
+
+.circle {
+	fill: rgba(144, 238, 144, 0.5);
+	stroke: rgb(0, 128, 0);
+}
+
+.line-wrap {
+	transition: opacity 0.3s;
+	opacity: 0;
+}
+
+.active {
+	opacity: 1;
+}

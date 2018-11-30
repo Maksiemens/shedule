@@ -1,149 +1,378 @@
 'use strict'
 
-var width = 582;
-var height = 206;
-var margin = 50;
-
-var rawData = [									
-	{x: 0, y: 100},
-	{x: 5, y: 100},
-	{x: 10, y: 100},
-	{x: 15, y: 100},
-	{x: 20, y: 100},
-	{x: 25, y: 95},
-	{x: 30, y: 95},
-	{x: 35, y: 95},
-	{x: 40, y: 95},
-	{x: 45, y: 90},
-	{x: 50, y: 90},
-	{x: 55, y: 90},
-	{x: 60, y: 90},
-	{x: 65, y: 85},
-	{x: 70, y: 85},
-	{x: 75, y: 80},
-	{x: 80, y: 80},
-	{x: 85, y: 80},
-	{x: 90, y: 75},
-	{x: 95, y: 75},
-	{x: 100, y: 70},
-	{x: 105, y: 65},
-	{x: 110, y: 60},
-	{x: 115, y: 58},
-	{x: 120, y: 56},
-	{x: 125, y: 54},
-	{x: 130, y: 52},
-	{x: 135, y: 50},
-	{x: 140, y: 50},
-	{x: 145, y: 50},
-	{x: 150, y: 50},
-	{x: 155, y: 50},
-	{x: 160, y: 100},
-	{x: 165, y: 95},
-	{x: 170, y: 90},
-	{x: 175, y: 90},
-	{x: 180, y: 90},
-	{x: 185, y: 90},
-	{x: 190, y: 0},
+var initData = [
+  {
+    date: "2018-09-11T21:00:00Z",
+    level: 100
+  },
+  {
+    date: "2018-09-12T13:00:00Z",
+    level: 100.0
+  },
+  {
+    date: "2018-09-12T14:00:00Z",
+    level: 100.0
+  },
+  {
+    date: "2018-09-12T15:00:00Z",
+    level: 91
+  },
+  {
+    date: "2018-09-12T22:00:00Z",
+    level: 86
+  },
+  {
+    date: "2018-09-12T23:00:00Z",
+    level: 83
+  },
+  {
+    date: "2018-09-13T00:00:00Z",
+    level: 81
+  },
+  {
+    date: "2018-09-13T22:00:00Z",
+    level: 79.0
+  },
+  {
+    date: "2018-09-13T23:00:00Z",
+    level: 71.5
+  },
+  {
+    date: "2018-09-14T00:00:00Z",
+    level: 67.5
+  },
+  {
+    date: "2018-09-14T03:00:00Z",
+    level: 65
+  },
+  {
+    date: "2018-09-14T11:00:00Z",
+    level: 61.0
+  },
+  {
+    date: "2018-09-14T12:00:00Z",
+    level: 57.0
+  },
+  {
+    date: "2018-09-14T15:00:00Z",
+    level: 53
+  },
+  {
+    date: "2018-09-14T16:00:00Z",
+    level: 50
+  },
+  {
+    date: "2018-09-14T17:00:00Z",
+    level: 47.5
+  },
+  {
+    date: "2018-09-14T18:00:00Z",
+    level: 46
+  },
+  {
+    date: "2018-09-14T19:00:00Z",
+    level: 46
+  },
+  {
+    date: "2018-09-14T20:00:00Z",
+    level: 43
+  },
+  {
+    date: "2018-09-14T21:00:00Z",
+    level: 100.0
+  },
+  {
+    date: "2018-09-14T22:00:00Z",
+    level: 100
+  },
+  {
+    date: "2018-09-14T23:00:00Z",
+    level: 100.0
+  }
 ];
 
-var data = [];
+//Парсинг даты
+var strictIsoParse = d3.utcParse("%Y-%m-%dT%H:%M:%LZ");
 
+//Возращаем новый массив с коректной датой
+var parsed = initData.map((item) => {
+
+	return {
+    date: strictIsoParse(item.date),
+    level: item.level
+  };
+
+});
+
+//Отступы
+var margin = {
+  top: 50,
+  right: 80,
+  bottom: 30,
+  left: 50
+};
+
+//Ширина и высота
+var width = 600 - margin.left - margin.right; 
+var height = 200 - margin.top - margin.bottom;
+
+// Масштабирование SVG
+var xCoordinate = d3.scaleTime().rangeRound([0, width]);
+var yCoordinate = d3.scaleLinear().rangeRound([height, 0]);
+
+xCoordinate.domain(d3.extent(parsed, function(d) { return d.date; }));
+yCoordinate.domain(d3.extent(parsed, function(d) { return d.level; }));
+
+
+//Количество точек для осей X
+var arrDate = initData.map((item) => new Date(item.date).getDate() );
+
+var arrDayNoRepeat = arrDate.reduce((prev, curr) => {
+
+  if( prev.indexOf(curr) < 0 ) {
+    prev.push(curr);
+  }
+
+  return prev;
+
+}, []);
+
+//Создаем ось X с кол-вом делений
+var xAxis = d3.axisBottom(xCoordinate).ticks(arrDayNoRepeat.length).tickFormat(d3.timeFormat('%d.%m'));
+
+//Создаем ось Y с кол-вом делений (тут нужно быть аккуратным)
+var yAxis = d3.axisLeft(yCoordinate).ticks(arrDayNoRepeat.length + 1);
+
+//Функция, создающая по массиву точек линию
+var line = d3.line().curve(d3.curveBasis)
+
+  .x(function(d){
+    return xCoordinate(d.date);
+  })
+
+  .y(function(d){
+    return yCoordinate(d.level);
+	})
+;
+
+// Функция, создающая по массиву точек область
+var area = d3.area().curve(d3.curveBasis)
+
+  .x(function(d) {
+    return xCoordinate(d.date);
+  })
+
+  .y0(height)
+        
+  .y1(function(d) {
+    return yCoordinate(d.level);
+  })
+;
+
+// Добавляем SVG на страницу
 var svg = d3.select(".app")
 						.append("svg")
 						.attr("class", "axis")
-						.attr("width", width)
-						.attr("height", height);
+						.attr("viewBox", "0 0 550 160")
+;
 
-//Длина оси X= ширина контейнера svg - отступ слева и справа
-var xAxisLength = width - 2 * margin;     
+//Добавляем g контейнер на страницу
+//Смещение контейнера
+var xContainer = 30; 
+var yContainer = 20;
 
-//Длина оси Y = высота контейнера svg - отступ сверху и снизу
-var yAxisLength = height - 2 * margin;
+var container = svg.append("g")
+                   .attr("class", "container")
+                   .attr("transform", "translate(" + xContainer + "," + yContainer + ")")
+;
 
-//Функция интерполяции значений на ось Х  
-var scaleX = d3.scaleLinear()
-							 .domain([0, 200])
-							 .range([0, xAxisLength]);					
-					 
-//Функция интерполяции значений на ось Y
-var scaleY = d3.scaleLinear()
-							 .domain([100, 0])
-							 .range([0, yAxisLength]);
-					 
-for(var i=0; i<rawData.length; i++)
-	data.push( {x: scaleX(rawData[i].x) + margin, y: scaleY(rawData[i].y) + margin} );
-					 
-// создаем ось X   
-var xAxis = d3.axisBottom(scaleX)
-							.ticks(); // сколько делений на оси;
+//Добавляем график в контейнер на страницу
+var shedule = container.append("g")
+                       .attr("class", "shedule")
+;
 
-// создаем ось Y             
-var yAxis = d3.axisLeft(scaleY)
-							.ticks(2); // сколько делений на оси;
-						
+// Функция, создающая по массиву точек линию
+shedule.append("path")
+       .attr("d", line(parsed) )
+       .attr("class", "border-line")
+;
+
+//Функция, создающая закрашеную область	
+shedule.append("path")
+       .attr( "d", area(parsed) )
+       .attr("class", "area")
+;
+
 //Отрисовка оси Х             
-svg.append("g")       
-	 .attr("class", "x-axis")
-	 .attr("transform",
-			 "translate(" + margin + "," + (height - margin) + ")")
-	 .call(xAxis);
+container.append("g")       
+	       .attr("class", "x-axis")
+	       .attr("transform", "translate(0," + height + ")")
+         .call(xAxis)
+;
 
-// отрисовка оси Y
-svg.append("g")       
-	 .attr("class", "y-axis")
-	 .attr("transform", 
-					"translate(" + margin + "," + margin + ")")
-	 .call(yAxis);
-	 
+//Отрисовка оси Y
+container.append("g")       
+         .attr("class", "y-axis")
+	       .call(yAxis)
+;
+
 //Рисуем горизонтальные линии 
-d3.selectAll("g.y-axis g.tick")
-	.append("line")
-	.classed("grid-line", true)
-	.attr("x1", 0)
-	.attr("y1", 0)
-	.attr("x2", xAxisLength)
-	.attr("y2", 0);
+d3.selectAll(".y-axis .tick").append("line")
+                               .attr("x1", 0)
+                               .attr("y1", 0)
+                               .attr("x2", width)
+                               .attr("y2", 0)
+;
 
-//Функция, создающая по массиву точек линии
-var line = d3.line()
-						 .curve(d3.curveBasis)
-						 .x(function(d){return d.x;})
-						 .y(function(d){return d.y;});
+// Интерактивная обертка 
+var interactiveWrap = container.append("g")
+                               .attr("class", "interactive-wrap")
+;
 
-//Функция, создающая область
-var area = d3.area()
-						 .curve(d3.curveBasis)
-						 .x(function(d) { return d.x;})
-					   .y0(height - margin)
-						 .y1(function(d) { return d.y;});
-						
-//Закрашеная область	
-var g = svg.append("g");
-g.append("path")
- .attr("class", "area")
- .attr("d", area(data));
- 
-//Контур закрашеваемой области (бордер)
-g.append("path")
- .attr("d", line(data))
- .attr("class", "border-line");
+// Блок линии 
+var lineWrap = interactiveWrap.append("g")
+															.attr("class", "line-wrap")
+;
 
-//Текст для оси Y
-g.append("text")
-.attr("x", margin - 20)
-.attr("y", margin - 20)
-.attr("class", "textY")
-.text("Fuel");
+// Ось перемещения
+var axisTravel = lineWrap.append("g")
+												 .attr("class", "axis-travel")
+;
 
-//Текст для оси X
-g.append("text")
-.attr("x", width - margin + 3) //582 - 50 + 3 = 535
-.attr("y", height - margin - 56) //100
-.attr("class", "textX")
-.text("90%");
+//Вертикальная линии, которая будет следоваться за мышью
+var verticalLine = lineWrap.append("line")
+													 .attr("class", "vertical-line")
+													 .attr("x1", 0)
+													 .attr("x2", 0)
+													 .attr("y1", 0)
+													 .attr("y2", height)									
+;
 
-g.append("text")
-.attr("x", width - margin + 8) //582 - 50 + 8 = 540
-.attr("y", height - margin - 26) //130
-.attr("class", "textX")
-.text("Full");
+//Круг, который будет ездить по графику
+var circle = axisTravel.append("circle")
+										   .attr("class", "circle")
+										   .attr("r", 7)
+;
+
+
+//Прямоугольник по оси Y, который будет следоваться за мышью
+var yTextBox = axisTravel.append("rect")
+                         .attr("class", "y-text-box")
+												 .attr("x", 9)
+												 .attr("y", -20)
+;
+
+//Прямоугольник по оси X, который будет следоваться за мышью
+var xTextBox = axisTravel.append("rect")
+                         .attr("class", "x-text-box")                        
+                         .attr("x", 10)
+                         .attr("y", 0)
+;
+
+//Текст по оси Y, который будет следоваться за мышью
+var yText = axisTravel.append("text")
+                      .attr("class", "y-text")
+                      .attr("x", 12)
+                      .attr("y", -8)                 
+;
+
+//Текст по оси X, который будет следоваться за мышью
+var xText = axisTravel.append("text")
+                      .attr("class", "x-text")
+                      .attr("x", 13)
+                      .attr("y", 12)
+;
+
+// Добавляется прямоугольник, на котором будут обрабатываться события 
+var interactiveLayer = interactiveWrap.append("rect")
+                                      .attr("class", "interactive-layer")
+                                      .attr('width', width)
+                                      .attr('height', height)
+                                      .attr('fill', 'none')
+                                      .attr('pointer-events', 'all')
+;
+
+// Получаем SVG ноду блока с текстом, кругом и линией 
+var lineWrapNode = lineWrap.node();
+
+// Событие, скрывает блок с текстом, кругом и линией 
+interactiveLayer.on('mouseout', function() {
+	lineWrapNode.classList.remove("active");
+});
+
+// Событие, показывает блок с текстом, кругом и линией 
+interactiveLayer.on('mouseover', function() {
+	lineWrapNode.classList.add("active");
+})
+
+// Получаем ноду линии, которая двигается за мышью 
+var borderLine = document.querySelector('.border-line');
+
+// Получаем SVG ноду Y
+var yTextNode = yText.node();
+
+// Получаем SVG ноду Х
+var xTextNode = xText.node();
+
+
+// Событие движения мыши
+interactiveLayer.on('mousemove', function() {
+	var mouse = d3.mouse(this);
+
+	lineWrap.attr("transform", "translate(" + mouse[0] + "," + 0 + ")" );
+
+	axisTravel.attr("transform", function() {                     
+    var beginning = 0;
+    var end = borderLine.getTotalLength();
+
+		while (true){
+			var target = Math.floor((beginning + end) / 2);
+			var pos = borderLine.getPointAtLength(target);
+
+			if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+				break;
+			}
+			else if (pos.x > mouse[0]) {
+				end = target;
+			}      
+			else if (pos.x < mouse[0]) {
+				beginning = target;
+			}
+			else {
+				break; //position found
+			} 
+    }
+    
+
+    //Добавляем текст из оси X
+    xText.text(moment(xCoordinate.invert(pos.x)).format('HH:mm'));
+
+    //Измеряем длину и высоту текста из оси X
+    var xTextBbox = xTextNode.getBBox();
+    var xTextBboxWidth = xTextBbox.width;
+    var xTextBboxHeight = xTextBbox.height;
+    var xPadding = 5;
+
+    //Подгоняем размер прямоугольника xTextBox под текст
+    xTextBox.attr("width", xTextBboxWidth + xPadding)
+            .attr("height", xTextBboxHeight + xPadding)
+    ; 
+
+    //Добавляем текст из оси Y
+    yText.text(yCoordinate.invert(pos.y).toFixed(1) + " %");
+
+    //Измеряем длину и высоту текста из оси Y
+    var yTextBbox = yTextNode.getBBox();
+    var yTextBboxWidth = yTextBbox.width;
+    var yTextBboxHeight = yTextBbox.height;
+    var yPadding = 5;
+
+    //Подгоняем размер прямоугольника yTextBox под текст
+    yTextBox.attr("width", yTextBboxWidth + yPadding)
+            .attr("height", yTextBboxHeight + yPadding)
+    ;
+    	
+		return "translate(" + 0 + "," + pos.y +")";
+	});
+
+});
