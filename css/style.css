@@ -2,6 +2,11 @@
 	box-sizing: border-box;
 }
 
+/* .axis path, .axis line {
+	fill: none;
+	stroke:	rgb(211, 211, 211);
+} */
+
 line {
 	fill: none;
 	stroke:	rgb(211, 211, 211);
@@ -11,27 +16,32 @@ path {
 	fill: none;
 }
 
-/*Ð¦Ð¸Ñ„Ñ€Ñ‹ Ð½Ð° Ð¾ÑÑÑ… Ð¥ Ð¸ Y*/
+/*Цифры на осях Х и Y*/
 .tick text {
 	fill: rgb(128, 128, 128);
 	font-family: Arial, sans-serif;
 	font-size: 12px;
 }
 
-/*Ð¢ÐµÐºÑÑ‚ Ð´Ð»Ñ Ð¾ÑÐµÐ¹ Ð¥ Ð¸ Y*/
+/*Текст для осей Х и Y*/
 .textX, .textY {
 	fill: rgb(0, 0, 0);
 	font-family: Arial, sans-serif;
 	font-size: 24px;
+	text-anchor: end;
 }
 
-/*Ð—Ð°ÐºÑ€Ð°ÑˆÐµÐ½Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ*/
+/*Закрашеная область*/
 .area {
 	fill: rgba(144, 238, 144, 0.5);
 } 
 
-/* ÐšÐ¾Ð½Ñ‚ÑƒÑ€ Ð·Ð°ÐºÑ€Ð°ÑˆÐµÐ²Ð°ÐµÐ¼Ð¾Ð¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ (Ð±Ð¾Ñ€Ð´ÐµÑ€) */
+/* Контур закрашеваемой области (бордер) */
 .border-line {
 	stroke: rgb(0, 128, 0);
 	stroke-width: 2;
+}
+
+.tests {
+	width: 450px;
 }
